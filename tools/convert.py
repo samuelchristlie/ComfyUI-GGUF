@@ -145,8 +145,24 @@ class ModelLumina2(ModelTemplate):
         ("cap_embedder.1.weight", "context_refiner.0.attention.qkv.weight")
     ]
 
+class ModelLance(ModelTemplate):
+    arch = "lance"
+    shape_fix = False
+    keys_detect = [
+        ("llm2vae.weight", "vae2llm.weight", "time_embedder.mlp.0.weight"),
+    ]
+    keys_ignore = [
+        "vit_model.",
+    ]
+    keys_hiprec = [
+        "llm2vae",
+        "vae2llm",
+        "time_embedder",
+        "latent_pos_embed",
+    ]
+
 arch_list = [ModelFlux, ModelSD3, ModelAura, ModelHiDream, CosmosPredict2, 
-             ModelLTXV, ModelHyVid, ModelWan, ModelSDXL, ModelSD1, ModelLumina2]
+             ModelLTXV, ModelHyVid, ModelWan, ModelSDXL, ModelSD1, ModelLumina2, ModelLance]
 
 def is_model_arch(model, state_dict):
     # check if model is correct
