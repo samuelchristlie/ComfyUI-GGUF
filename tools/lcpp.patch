@@ -228,6 +228,54 @@ index 24e1f1f0..25db4c69 100644
 +            ++qs.i_ffn_down;
 +    }
 +
++    // Lance-specific rules (LLM-style naming, not DiT-style)
++    if (arch == LLM_ARCH_LANCE) {
++        // Upgrade V projections (critical for generation quality)
++        if (name.find("self_attn.v_proj") != std::string::npos) {
++            if (ftype == LLAMA_FTYPE_MOSTLY_Q2_K) {
++                new_type = GGML_TYPE_Q3_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q3_K_M) {
++                new_type = qs.i_attention_wv < 2 ? GGML_TYPE_Q5_K : GGML_TYPE_Q4_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q3_K_L) {
++                new_type = GGML_TYPE_Q5_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q4_K_M || ftype == LLAMA_FTYPE_MOSTLY_Q5_K_M) {
++                new_type = GGML_TYPE_Q6_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q4_K_S && qs.i_attention_wv < 4) {
++                new_type = GGML_TYPE_Q5_K;
++            }
++            ++qs.i_attention_wv;
++        }
++        // Upgrade FFN down projections
++        else if (name.find("mlp.down_proj") != std::string::npos) {
++            if (ftype == LLAMA_FTYPE_MOSTLY_Q3_K_M) {
++                new_type = GGML_TYPE_Q4_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q3_K_L) {
++                new_type = GGML_TYPE_Q5_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q4_K_S) {
++                new_type = GGML_TYPE_Q5_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q4_K_M) {
++                new_type = GGML_TYPE_Q6_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q5_K_M) {
++                new_type = GGML_TYPE_Q6_K;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q4_0) {
++                new_type = GGML_TYPE_Q4_1;
++            }
++            else if (ftype == LLAMA_FTYPE_MOSTLY_Q5_0) {
++                new_type = GGML_TYPE_Q5_1;
++            }
++            ++qs.i_ffn_down;
++        }
++    }
++
 +    // Sanity check for row shape
 +    bool convert_incompatible_tensor = false;
 +    if (new_type == GGML_TYPE_Q2_K    || new_type == GGML_TYPE_Q3_K    || new_type == GGML_TYPE_Q4_K   ||
@@ -426,6 +474,13 @@ index 24e1f1f0..25db4c69 100644
 +            quantize &= name.find("cap_embedder.") == std::string::npos;
 +            quantize &= name.find("context_refiner.") == std::string::npos;
 +            quantize &= name.find("noise_refiner.") == std::string::npos;
++        }
++        if (model.arch == LLM_ARCH_LANCE) {
++            image_model = true;
++            quantize &= name.find("llm2vae") == std::string::npos;
++            quantize &= name.find("vae2llm") == std::string::npos;
++            quantize &= name.find("time_embedder") == std::string::npos;
++            quantize &= name.find("latent_pos_embed") == std::string::npos;
 +        }
 +        // ignore 3D/4D tensors for image models as the code was never meant to handle these
 +        if (image_model) {
