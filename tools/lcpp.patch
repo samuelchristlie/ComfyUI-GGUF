@@ -57,6 +57,7 @@ index 24e1f1f0..25db4c69 100644
 +    LLM_ARCH_HIDREAM,
 +    LLM_ARCH_COSMOS,
 +    LLM_ARCH_LUMINA2,
++    LLM_ARCH_LANCE,
      LLM_ARCH_UNKNOWN,
  };
  
@@ -75,6 +76,7 @@ index 24e1f1f0..25db4c69 100644
 +    { LLM_ARCH_HIDREAM,         "hidream"      },
 +    { LLM_ARCH_COSMOS,          "cosmos"       },
 +    { LLM_ARCH_LUMINA2,         "lumina2"      },
++    { LLM_ARCH_LANCE,           "lance"        },
      { LLM_ARCH_UNKNOWN,         "(unknown)"    },
  };
  
@@ -93,6 +95,7 @@ index 24e1f1f0..25db4c69 100644
 +    { LLM_ARCH_HIDREAM, {}},
 +    { LLM_ARCH_COSMOS,  {}},
 +    { LLM_ARCH_LUMINA2, {}},
++    { LLM_ARCH_LANCE,   {}},
      {
          LLM_ARCH_UNKNOWN,
          {
@@ -113,6 +116,7 @@ index 24e1f1f0..25db4c69 100644
 +        case LLM_ARCH_HIDREAM:
 +        case LLM_ARCH_COSMOS:
 +        case LLM_ARCH_LUMINA2:
++        case LLM_ARCH_LANCE:
 +            model.ftype = ml.ftype;
 +            return;
 +        default:
