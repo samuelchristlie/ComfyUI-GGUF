@@ -39,7 +39,7 @@ index b16c462f..6d1568f1 100644
      const int idx = gguf_find_tensor(ctx, name);
      if (idx < 0) {
 diff --git a/src/llama.cpp b/src/llama.cpp
-index 24e1f1f0..6341552b 100644
+index 24e1f1f0..47640ed8 100644
 --- a/src/llama.cpp
 +++ b/src/llama.cpp
 @@ -205,6 +205,18 @@ enum llm_arch {
@@ -249,8 +249,8 @@ index 24e1f1f0..6341552b 100644
 +            }
 +            ++qs.i_attention_wv;
 +        }
-+        // Upgrade FFN down projections
-+        else if (name.find("mlp.down_proj") != std::string::npos) {
++        // Upgrade FFN down projections (also matches mlp_moe_gen.down_proj)
++        else if (name.find(".down_proj") != std::string::npos) {
 +            if (ftype == LLAMA_FTYPE_MOSTLY_Q3_K_M) {
 +                new_type = GGML_TYPE_Q4_K;
 +            }
